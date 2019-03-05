@@ -17,7 +17,7 @@ Well, it's a Dockerfile and an docker-entrypoint.sh, so just do
 docker build . 
 ```
   
-to get your image in your local Docker registry. **Compilation will take very long** (due to the use of QEMU) but you can find a compiled version on Dockerhub svenwal/kong-arm <https://cloud.docker.com/repository/docker/svenwal/kong-arm>
+to get your image in your local Docker registry. **Compilation will take very long** (due to the use of QEMU) but you can find a compiled version on Dockerhub *svenwal/kong-arm* at <https://cloud.docker.com/repository/docker/svenwal/kong-arm>
 
 ## Testing
 So far the only tests have been on a Kubernetes cluster on some Raspberry Pi 3+ 
