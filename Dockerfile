@@ -1,7 +1,5 @@
 FROM hypriot/rpi-alpine as builder
 
-ENV KONG_VERSION 1.1.0rc1
-ENV KONG_SHA256 72abd186181b5ebb263c4e12db5d89cac529e2b5ca858015d44a34d560755b35
 ENV OPENSSL_VERSION 1.0.2h
 ENV OPENRESTY_VERSION 1.13.6.2
 
@@ -24,15 +22,10 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz \
 	&& make install \
 	&& cd ..
 
-RUN wget https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz \
-	&& tar -zxvf openresty-${OPENRESTY_VERSION}.tar.gz
-
-
 RUN	wget -O kong.tar.gz "https://bintray.com/kong/kong-community-edition-alpine-tar/download_file?file_path=kong-community-edition-$KONG_VERSION.apk.tar.gz" \
-	&& wget -O wget -O openresty.tar.gz https://openresty.org/download/openresty-1.13.6.2.tar.gz
+	&& wget -O wget -O openresty.tar.gz https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz
 
-RUN	mkdir /tmp/openresty \
-	&& tar -xzf /openresty.tar.gz \
+RUN	tar -xzf /openresty.tar.gz \
 	&& cd openresty-${OPENRESTY_VERSION} \
 	&& ./configure --with-pcre=../pcre-8.40 --with-openssl=../openssl-1.0.2h -j2 --with-pcre-jit  --with-http_ssl_module --with-http_realip_module   --with-http_stub_status_module  --with-http_v2_module \
 	&& make -j2 \
@@ -73,8 +66,8 @@ RUN adduser -Su 1337 -g root kong \
 RUN	mkdir /tmp/openresty \
  	&& apk del .build-deps \
  	&& chown -R kong /usr/local/kong \
-    && chgrp -R 0 /usr/local/kong \
-    && chmod -R g=u /usr/local/kong
+	&& chgrp -R 0 /usr/local/kong \
+	&& chmod -R g=u /usr/local/kong
 
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
