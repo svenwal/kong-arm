@@ -1,8 +1,8 @@
 # Docker image for ARM (Raspberry Pi)
-This Docker image provides the Open Source edition of the Kong Gateway (see https://github.com/Kong/kong) for ARM based architectures. It has been tested and deployed with Raspberry 3+
+This Docker image provides the Open Source edition of the Kong Gateway (see https://github.com/Kong/kong) for ARM based architectures. It has been tested and deployed with some Raspberry Pi 3+
 
 ## Prerequesites
-When compiling this image on a non ARM machine you need to have QEMU <https://www.qemu.org> being installed and activated. Luckily this is extremely easy, just do
+When compiling this image on a non ARM machine you need (next to a Docker installation) to have QEMU <https://www.qemu.org> being installed and activated. Luckily this is extremely easy, just do
 
 ```
 docker run --rm --privileged multiarch/qemu-user-static:register --reset
