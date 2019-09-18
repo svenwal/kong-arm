@@ -1,17 +1,17 @@
 FROM hypriot/rpi-alpine as builder
 
-ENV OPENSSL_VERSION 1.0.2h
-ENV OPENRESTY_VERSION 1.13.6.1
-ENV KONG_VERSION 1.0.3
-ENV PCRE_VERSION=8.40
-ENV LUAROCKS_VERSION=2.4.3
+ENV OPENSSL_VERSION 1.1.0d
+ENV OPENRESTY_VERSION 1.15.8.2
+ENV KONG_VERSION 1.3.0
+ENV PCRE_VERSION=8.43
+ENV LUAROCKS_VERSION=3.1.3
 
 RUN apk add --update alpine-sdk
 
 RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
 	&& apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec unzip zlib-dev 
 
-RUN wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-${PCRE_VERSION}.tar.gz \
+RUN wget https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz \
 	&& tar -xvf pcre-${PCRE_VERSION}.tar.gz
 
 RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz \
@@ -69,8 +69,9 @@ LABEL maintainer="Sven Walther <sven@walther.world>"
 COPY --from=builder /usr/local /usr/local
 
 RUN adduser -Su 1337 -g root kong \
- 	&& apk add --no-cache --virtual .build-deps wget tar ca-certificates \
- 	&& apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec
+	&& apk add --no-cache --virtual .build-deps wget tar ca-certificates \
+	&& apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec zip
+
 
 RUN	mkdir /tmp/openresty \
  	&& apk del .build-deps \
