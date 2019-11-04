@@ -1,6 +1,6 @@
 FROM hypriot/rpi-alpine as builder
 
-ENV OPENSSL_VERSION 1.1.0d
+ENV OPENSSL_VERSION 1.1.1c
 ENV OPENRESTY_VERSION 1.15.8.2
 ENV KONG_VERSION 1.3.0
 ENV PCRE_VERSION=8.43
@@ -8,7 +8,7 @@ ENV LUAROCKS_VERSION=3.1.3
 
 RUN apk add --update alpine-sdk
 
-RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates \
+RUN apk add --no-cache --virtual .build-deps wget tar ca-certificates linux-headers \
 	&& apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec unzip zlib-dev 
 
 RUN wget https://ftp.pcre.org/pub/pcre/pcre-${PCRE_VERSION}.tar.gz \
@@ -19,13 +19,13 @@ RUN wget https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz \
 	&& wget https://raw.githubusercontent.com/openresty/openresty/master/patches/openssl-${OPENSSL_VERSION}-sess_set_get_cb_yield.patch \
 	&& cd openssl-${OPENSSL_VERSION}/ \
 	&& patch -p1 < ../openssl-${OPENSSL_VERSION}-sess_set_get_cb_yield.patch \
-	&& ./config -fPIC \
+	&& ./config -fPIC no-afalgeng \
 	&& make \
 	&& make test \
 	&& make install \
 	&& cd ..
 
-RUN	wget -O kong.tar.gz "https://bintray.com/kong/kong-community-edition-alpine-tar/download_file?file_path=kong-community-edition-${KONG_VERSION}.apk.tar.gz" \
+RUN	wget -O kong.tar.gz "https://bintray.com/kong/kong-alpine-tar/download_file?file_path=kong-${KONG_VERSION}.apk.tar.gz" \
 	&& wget -O openresty.tar.gz https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz \
 	&& wget https://github.com/Kong/openresty-patches/archive/master.tar.gz 
 	
@@ -41,6 +41,7 @@ RUN	tar -xzf /openresty.tar.gz \
 	&& sudo make install \
 	&& export PATH="$PATH:/usr/local/openresty/bin"
 
+RUN cp -a /openssl-1.1.1c/include /usr/local/ssl
 
 RUN wget -O luarocks.tar.gz http://luarocks.github.io/luarocks/releases/luarocks-${LUAROCKS_VERSION}.tar.gz \
 	&& tar -xzf luarocks.tar.gz \
@@ -52,7 +53,7 @@ RUN wget -O luarocks.tar.gz http://luarocks.github.io/luarocks/releases/luarocks
 
 RUN apk add --no-cache bsd-compat-headers m4
 
-RUN luarocks install kong ${KONG_VERSION}-0 OPENSSL_DIR=/usr/local/ssl CRYPTO_DIR=/usr/local/ssl
+RUN luarocks install kong ${KONG_VERSION}-0 OPENSSL_DIR=/openssl-1.1.1c CRYPTO_DIR=/openssl-1.1.1c OPENSSL_LIBDIR=/openssl-1.1.1c/
 
 RUN cd /tmp \
 	&& tar xvf /kong.tar.gz \
